@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal Penyuluh Pertanian – Desa Kerta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green-dark:   #1a3c2b;
+      --green-mid:    #2d6a4f;
+      --green-light:  #52b788;
+      --green-pale:   #d8f3dc;
+      --accent:       #f4a261;
+      --accent-light: #fde8d0;
+      --cream:        #faf9f5;
+      --text:         #1e2d23;
+      --text-muted:   #5a7060;
+      --border:       #b7e4c7;
+      --white:        #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, #40916c 100%);
+      padding: 36px 24px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 80%, rgba(82,183,136,.18) 0%, transparent 50%),
+        radial-gradient(circle at 85% 20%, rgba(244,162,97,.12) 0%, transparent 50%);
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #d8f3dc;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      color: var(--white);
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+    header p {
+      color: #b7e4c7;
+      font-size: .88rem;
+      font-weight: 500;
+    }
+    .header-icon {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ── YEAR LABEL ── */
+    .year-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .year-label span {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--green-mid);
+      font-weight: 600;
+    }
+    .year-label::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    /* ── MONTH CARD ── */
+    .month-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(45,106,79,.07);
+      transition: box-shadow .25s;
+    }
+    .month-card:hover { box-shadow: 0 4px 18px rgba(45,106,79,.13); }
+
+    .month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+    }
+    .month-header:hover { background: var(--green-pale); }
+
+    .month-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .month-num {
+      background: var(--green-mid);
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .month-info h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+    .month-info .link-count {
+      font-size: .76rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .chevron {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--green-pale);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .2s, transform .3s;
+    }
+    .chevron svg {
+      width: 14px; height: 14px;
+      stroke: var(--green-mid);
+      transition: transform .3s;
+    }
+    .month-card.open .chevron { background: var(--green-mid); }
+    .month-card.open .chevron svg { stroke: var(--white); transform: rotate(180deg); }
+
+    /* ── LINK LIST ── */
+    .link-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .38s cubic-bezier(.4,0,.2,1);
+    }
+    .month-card.open .link-list { max-height: 600px; }
+
+    .link-divider {
+      height: 1px;
+      background: var(--green-pale);
+      margin: 0 20px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 20px;
+      text-decoration: none;
+      border-bottom: 1px solid #f0faf3;
+      transition: background .15s;
+    }
+    .link-item:last-child { border-bottom: none; }
+    .link-item:hover { background: var(--green-pale); }
+
+    .link-icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+    .link-icon.green  { background: var(--green-pale); }
+    .link-icon.orange { background: var(--accent-light); }
+    .link-icon.blue   { background: #dbeafe; }
+    .link-icon.purple { background: #ede9fe; }
+    .link-icon.red    { background: #fee2e2; }
+
+    .link-text strong {
+      display: block;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+    .link-text span {
+      font-size: .76rem;
+      color: var(--text-muted);
+    }
+
+    .link-arrow {
+      margin-left: auto;
+      color: var(--green-light);
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 20px 16px;
+      font-size: .75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--green-mid); }
+
+    /* ── SEARCH BAR ── */
+    .search-wrap {
+      margin-bottom: 22px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      background: var(--white);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .search-wrap input:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,.15);
+    }
+    .search-wrap .search-icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      font-size: 1rem; pointer-events: none;
+    }
+
+    /* ── NO RESULT ── */
+    .no-result {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: .9rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-icon">🌾</span>
+  <div class="badge">BPP Kecamatan Payangan</div>
+  <h1>Portal Link Penyuluh<br>Desa Kerta</h1>
+  <p>Kabupaten Gianyar · Provinsi Bali · 2025</p>
+</header>
+
+<main>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Cari nama laporan atau link…" oninput="filterLinks(this.value)"/>
+  </div>
+
+  <div class="year-label">
+    <span>Tahun 2025</span>
+  </div>
+
+  <div id="monthContainer">
+
+    <!-- ── JANUARI ── -->
+    <div class="month-card" data-month="0">
+      <div class="month-header" onclick="toggleMonth(this)">
+        <div class="month-left">
+          <div class="month-num">01</div>
+          <div class="month-info">
+            <h2>Januari 2025</h2>
+            <div class="link-count">6 tautan pelaporan</div>
+          </div>
+        </div>
+        <div class="chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-divider"></div>
+        <a class="link-item" href="https://forms.gle/contoh1" target="_blank" data-label="Laporan Tanam Januari Google Forms">
+          <div class="link-icon green">🌱</div>
+          <div class="link-text">
+            <strong>Laporan Tanam</strong>
+            <span>Rekap luas tanam & varietas • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh2" target="_blank" data-label="Laporan Panen Januari Google Forms">
+          <div class="link-icon orange">🌾</div>
+          <div class="link-text">
+            <strong>Laporan Panen</strong>
+            <span>Produktivitas & realisasi panen • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh3" target="_blank" data-label="LCS Konten Kementan Januari">
+          <div class="link-icon blue">📱</div>
+          <div class="link-text">
+            <strong>LCS Konten Kementan</strong>
+            <span>Upload konten media sosial pertanian • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh4" target="_blank" data-label="Laporan Pupuk Januari Spreadsheet">
+          <div class="link-icon green">🧪</div>
+          <div class="link-text">
+            <strong>Laporan Pupuk</strong>
+            <span>Distribusi & realisasi pupuk bersubsidi • Spreadsheet</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh5" target="_blank" data-label="Petani Milenial Januari Google Forms">
+          <div class="link-icon purple">👨‍🌾</div>
+          <div class="link-text">
+            <strong>Data Petani Milenial</strong>
+            <span>Pendataan petani usia ≤ 39 tahun • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh6" target="_blank" data-label="Laporan Kunjungan Lapangan Januari">
+          <div class="link-icon red">📋</div>
+          <div class="link-text">
+            <strong>Laporan Kunjungan Lapangan</strong>
+            <span>Rekapitulasi kunjungan ke kelompok tani • Spreadsheet</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── FEBRUARI ── -->
+    <div class="month-card" data-month="1">
+      <div class="month-header" onclick="toggleMonth(this)">
+        <div class="month-left">
+          <div class="month-num">02</div>
+          <div class="month-info">
+            <h2>Februari 2025</h2>
+            <div class="link-count">5 tautan pelaporan</div>
+          </div>
+        </div>
+        <div class="chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-divider"></div>
+        <a class="link-item" href="https://forms.gle/contoh7" target="_blank" data-label="Laporan Tanam Februari">
+          <div class="link-icon green">🌱</div>
+          <div class="link-text">
+            <strong>Laporan Tanam</strong>
+            <span>Rekap luas tanam & varietas • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh8" target="_blank" data-label="Laporan Panen Februari">
+          <div class="link-icon orange">🌾</div>
+          <div class="link-text">
+            <strong>Laporan Panen</strong>
+            <span>Produktivitas & realisasi panen • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh9" target="_blank" data-label="LCS Konten Kementan Februari">
+          <div class="link-icon blue">📱</div>
+          <div class="link-text">
+            <strong>LCS Konten Kementan</strong>
+            <span>Upload konten media sosial pertanian • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh10" target="_blank" data-label="Laporan Pupuk Februari">
+          <div class="link-icon green">🧪</div>
+          <div class="link-text">
+            <strong>Laporan Pupuk</strong>
+            <span>Distribusi & realisasi pupuk bersubsidi • Spreadsheet</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh11" target="_blank" data-label="Petani Milenial Februari">
+          <div class="link-icon purple">👨‍🌾</div>
+          <div class="link-text">
+            <strong>Data Petani Milenial</strong>
+            <span>Pendataan petani usia ≤ 39 tahun • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── MARET ── -->
+    <div class="month-card" data-month="2">
+      <div class="month-header" onclick="toggleMonth(this)">
+        <div class="month-left">
+          <div class="month-num">03</div>
+          <div class="month-info">
+            <h2>Maret 2025</h2>
+            <div class="link-count">4 tautan pelaporan</div>
+          </div>
+        </div>
+        <div class="chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-divider"></div>
+        <a class="link-item" href="https://forms.gle/contoh12" target="_blank" data-label="Laporan Tanam Maret">
+          <div class="link-icon green">🌱</div>
+          <div class="link-text">
+            <strong>Laporan Tanam</strong>
+            <span>Rekap luas tanam & varietas • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh13" target="_blank" data-label="Laporan Panen Maret">
+          <div class="link-icon orange">🌾</div>
+          <div class="link-text">
+            <strong>Laporan Panen</strong>
+            <span>Produktivitas & realisasi panen • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh14" target="_blank" data-label="LCS Konten Kementan Maret">
+          <div class="link-icon blue">📱</div>
+          <div class="link-text">
+            <strong>LCS Konten Kementan</strong>
+            <span>Upload konten media sosial pertanian • Google Forms</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+        <a class="link-item" href="https://forms.gle/contoh15" target="_blank" data-label="Laporan Pupuk Maret">
+          <div class="link-icon green">🧪</div>
+          <div class="link-text">
+            <strong>Laporan Pupuk</strong>
+            <span>Distribusi & realisasi pupuk bersubsidi • Spreadsheet</span>
+          </div>
+          <span class="link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── APRIL (kosong / placeholder) ── -->
+    <div class="month-card" data-month="3">
+      <div class="month-header" onclick="toggleMonth(this)">
+        <div class="month-left">
+          <div class="month-num" style="background:var(--border);color:var(--text-muted);">04</div>
+          <div class="month-info">
+            <h2 style="color:var(--text-muted)">April 2025</h2>
+            <div class="link-count">Belum ada tautan — segera ditambahkan</div>
+          </div>
+        </div>
+        <div class="chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="link-list">
+        <div class="link-divider"></div>
+        <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:.85rem;">
+          🔔 Tautan untuk bulan April akan ditambahkan segera.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /monthContainer -->
+
+  <div class="no-result" id="noResult">
+    😕 Tidak ada tautan yang cocok dengan pencarian Anda.
+  </div>
+
+</main>
+
+<footer>
+  Portal <strong>Penyuluh Pertanian Desa Kerta</strong> · BPP Kecamatan Payangan · Kabupaten Gianyar<br>
+  <span style="font-size:.7rem;margin-top:4px;display:block;">Untuk menambah atau mengubah link, hubungi admin portal</span>
+</footer>
+
+<script>
+  function toggleMonth(header) {
+    const card = header.closest('.month-card');
+    card.classList.toggle('open');
+  }
+
+  function filterLinks(query) {
+    const q = query.trim().toLowerCase();
+    const cards = document.querySelectorAll('.month-card');
+    const noResult = document.getElementById('noResult');
+    let anyVisible = false;
+
+    cards.forEach(card => {
+      if (!q) {
+        card.style.display = '';
+        return;
+      }
+      const items = card.querySelectorAll('.link-item');
+      const monthName = card.querySelector('h2').textContent.toLowerCase();
+      let cardHasMatch = monthName.includes(q);
+
+      items.forEach(item => {
+        const label = (item.dataset.label || '').toLowerCase();
+        const text  = item.textContent.toLowerCase();
+        if (label.includes(q) || text.includes(q)) {
+          item.style.display = '';
+          cardHasMatch = true;
+        } else {
+          item.style.display = q ? 'none' : '';
+        }
+      });
+
+      if (cardHasMatch) {
+        card.style.display = '';
+        card.classList.add('open');
+        anyVisible = true;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (!q) {
+      cards.forEach(c => { c.querySelectorAll('.link-item').forEach(i => i.style.display = ''); });
+    }
+    noResult.style.display = (q && !anyVisible) ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>
